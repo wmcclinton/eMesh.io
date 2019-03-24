@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Hackabull</string>
+    <string name="enablebt">Enable BT</string>
+    <string name="disablebt">Disable BT</string>
+    <string name="scanbt">Find Node</string>
+    <string name="measVoltage">Measure Voltage</string>
+    <string name="count_initial_value">0</string>
+    <string name="button_label">Send</string>
+    <string name="toast_message">Hurra!</string>
+    <string name="input_placeholder">Write a message</string>
+    <string name="title_activity_login">Login</string>
+    <string name="title_activity_list_of_names">ListOfNames</string>
+    <string name="title_activity_user_list">UserListActivity</string>
+    <string name="title_activity_public">PublicActivity</string>
+
+</resources>
