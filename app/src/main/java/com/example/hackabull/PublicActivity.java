@@ -96,25 +96,6 @@ public class PublicActivity extends AppCompatActivity {
         rvContacts.setAdapter(adapter);
         // Set layout manager to position the items
 
-        try {
-            BufferedReader bReader = new BufferedReader(new InputStreamReader(openFileInput("public_messages.txt")));
-            String line;
-            StringBuffer text = new StringBuffer();
-            int i = 0;
-            while ((line = bReader.readLine()) != null) {
-                Log.d("FILE",line);
-                String[] parts = line.split("--:--:--:--")[1].split(":::");
-                if (parts.length > 2) {
-                        contacts.add(i, new PublicMessage(parts[0].split("_")[1], parts[1], true));
-                        adapter.notifyItemInserted(i);
-                        i++;
-                }
-
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         // That's all!
         btn_private = findViewById(R.id.btn_private);
         btn_private.setOnClickListener(new View.OnClickListener() {
@@ -165,6 +146,65 @@ public class PublicActivity extends AppCompatActivity {
         if (!mBluetoothAdapter.isEnabled()) {
             Intent enableBluetooth = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBluetooth, 0);
+        }
+
+        Log.d("MESSAGE",address);
+        final BluetoothDevice device = BTAdapter.getRemoteDevice(address);
+        try {
+            new PublicActivity.ConnectThread(device, false).start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Log.d("MESSAGE","New_Messages: " + new_messages);
+
+        File path = getFilesDir();
+        File file = new File(path, "public_messages.txt");
+        FileOutputStream stream = null;
+
+        try {
+            stream = new FileOutputStream(file);
+            //stream = new FileOutputStream(file, true);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            try {
+                String msg = new_messages;
+                stream.write(msg.getBytes());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } finally {
+            try {
+                stream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        try {
+            synchronized(contacts){
+                contacts.clear();
+                adapter.notifyDataSetChanged();
+            }
+            BufferedReader bReader = new BufferedReader(new InputStreamReader(openFileInput("public_messages.txt")));
+            String line;
+            StringBuffer text = new StringBuffer();
+            int i = 0;
+            while ((line = bReader.readLine()) != null) {
+                Log.d("FILE",line);
+                String[] parts = line.split("--:--:--:--")[1].split(":::");
+                if (parts.length > 2) {
+                    contacts.add(i, new PublicMessage(parts[0].split("_")[1], parts[1], true));
+                    adapter.notifyItemInserted(i);
+                    i++;
+                }
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         pullToRefresh = (SwipeRefreshLayout) findViewById(R.id.pullToRefresh);
@@ -297,7 +337,7 @@ public class PublicActivity extends AppCompatActivity {
             String to_id = "Tessy_3524540358";
             String msg = null;
             if(sendMessage) {
-                msg = getRandomString(256) + ":::" + id + ":::" + mEdit.getText().toString() + ":::" + to_id + ":::" + "NODE_INFORMATION";
+                msg = getRandomString(256) + ":::" + id + ":::" + mEdit.getText().toString() + ":::" + "???" + ":::" + "NODE_INFORMATION";
             }
             else {
                 msg = "???" + ":::" + id + ":::" +"???" + ":::" + to_id + ":::" + "NODE_INFORMATION";

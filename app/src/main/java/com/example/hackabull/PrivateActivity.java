@@ -161,13 +161,13 @@ public class PrivateActivity extends AppCompatActivity{
         }
 
         try {
-            BufferedReader bReader = new BufferedReader(new InputStreamReader(openFileInput("global_messages.txt")));
+            BufferedReader bReader = new BufferedReader(new InputStreamReader(openFileInput("official_messages.txt")));
             String line;
             StringBuffer text = new StringBuffer();
             int i = 0;
             while ((line = bReader.readLine()) != null) {
                 Log.d("FILE",line);
-                String[] parts = line.split(":::");
+                String[] parts = line.split("--:--:--:--")[0].split(":::");
                 if(parts.length > 2) {
                     Log.d("TESTTEST",id + ":::" + parts[0]);
                     messageAdapter.add(new Message(parts[1],new MemberData(getRandomName(), getRandomColor()), id != parts[0]));

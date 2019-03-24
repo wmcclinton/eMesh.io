@@ -85,6 +85,41 @@ public class UserListActivity extends AppCompatActivity {
             }
         });
 
+        Log.d("MESSAGE",address);
+        final BluetoothDevice device = BTAdapter.getRemoteDevice(address);
+        try {
+            new UserListActivity.ConnectThread(device, false).start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Log.d("MESSAGE","New_Messages: " + new_messages);
+
+        File path = getFilesDir();
+        File file = new File(path, "official_messages.txt");
+        FileOutputStream stream = null;
+
+        try {
+            stream = new FileOutputStream(file);
+            //stream = new FileOutputStream(file, true);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            try {
+                String msg = new_messages;
+                stream.write(msg.getBytes());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } finally {
+            try {
+                stream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         try {
             synchronized(contacts){
                 contacts.clear();
@@ -154,7 +189,7 @@ public class UserListActivity extends AppCompatActivity {
                         contacts.clear();
                         adapter.notifyDataSetChanged();
                     }
-                    BufferedReader bReader = new BufferedReader(new InputStreamReader(openFileInput("global_messages.txt")));
+                    BufferedReader bReader = new BufferedReader(new InputStreamReader(openFileInput("official_messages.txt")));
                     String line;
                     StringBuffer text = new StringBuffer();
                     int i = 0;
